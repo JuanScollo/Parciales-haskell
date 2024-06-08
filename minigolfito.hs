@@ -1,4 +1,5 @@
 -- Modelo inicial
+import Data.List
 data Jugador = UnJugador {
   nombre :: String,
   padre :: String,
@@ -107,6 +108,69 @@ vaRasDeSuelo = (== 0) . altura
 
 efectoDeObstaculoNoSuperado :: Tiro -> Tiro
 efectoDeObstaculoNoSuperado = efectoDeHoyoSuperado
+
+---------
+--- 4 ---
+---------
+
+palosUtiles :: Jugador -> Obstaculo -> [Palo]
+palosUtiles jugador obstaculo = filter (paloUtil jugador obstaculo) losPalos
+
+paloUtil :: Jugador -> Obstaculo -> Palo -> Bool
+paloUtil jugador obstaculo palo = superado obstaculo (golpe jugador palo)
+
+superado :: Obstaculo -> Tiro -> Bool
+superado obstaculo tiro = snd (obstaculo tiro)
+
+type Obstaculos = [Obstaculo]
+
+consecutivosSuperados :: Tiro -> Obstaculos -> Int
+consecutivosSuperados tiro obstaculos = length  (takeWhile (== True) (obstaculosSuperados tiro obstaculos))
+
+obstaculosSuperados :: Tiro -> Obstaculos -> [Bool]
+obstaculosSuperados _ [] = []
+obstaculosSuperados tiro (obstaculo : obstaculos) = snd (obstaculo tiro) : obstaculosSuperados (fst (obstaculo tiro)) obstaculos
+
+
+paloMasUtil :: Jugador -> Obstaculos -> Palo
+paloMasUtil jugador obstaculos = maximoSegun (flip consecutivosSuperados obstaculos .  golpe jugador) losPalos 
+
+
+
+
+
+-- type Obstaculo = Tiro -> (Tiro, Superado)
+-- type Superado = Bool
+
+tirito :: Tiro
+tirito = UnTiro{
+    velocidad = 10,
+    precision = 95,
+    altura = 0
+}
+
+
+ganador :: [(Jugador, Puntos)] -> (Jugador, Puntos)
+ganador jugadores = maximumBy (mayorSegun snd) jugadores
+
+puntosGanador :: [(Jugador, Puntos)] -> Puntos
+puntosGanador jugadores = snd (ganador jugadores)
+
+noEsGanador :: Puntos -> (Jugador, Puntos) -> Bool
+noEsGanador puntosGanador (_, puntos) = puntos /= puntosGanador
+
+jugadoresPerdedores :: [(Jugador, Puntos)] -> [(Jugador, Puntos)]
+jugadoresPerdedores jugadores = filter (noEsGanador (puntosGanador jugadores)) jugadores
+
+padresQuePierdenLaApuesta :: [(Jugador, Puntos)] -> [String]
+padresQuePierdenLaApuesta jugadores = map (padre . fst) (jugadoresPerdedores jugadores)
+
+
+
+
+
+
+
 
 
 
