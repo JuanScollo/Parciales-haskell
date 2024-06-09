@@ -93,4 +93,14 @@ gemaLoca poder = poder . poder
 
 -- type Poder = Personaje -> Personaje
 
+-- 5 
+utilizar :: Personaje -> [Gemas] -> Personaje
+utilizar  = foldl (flip ($))
+
+
+
+-- 6
+ganaMasPoderosa :: Guantelete -> Personaje -> Gema
+ganaMasPoderosa guantelete personaje = 
+
 
